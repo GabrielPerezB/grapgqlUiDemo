@@ -159,11 +159,12 @@ class Feed extends Component {
       headers: {
         Authorization: "Bearer " + this.props.token,
       },
-      body: formData
-    }).then(fileResData => {
-      const imageUrl = fileResData.filePath;
-      let graphqlQuery = {
-        query: `
+      body: formData,
+    }).then((res) => res.json())
+      .then((fileResData) => {
+        const imageUrl = fileResData.filePath;
+        let graphqlQuery = {
+          query: `
           mutation {
             createPost(postInput:{title: "${postData.title}", content: "${postData.content}", imageUrl:"${imageUrl}"}) {
               _id
@@ -177,17 +178,18 @@ class Feed extends Component {
             }
           }
         `,
-      };
-  
-      return fetch("http://localhost:8080/graphql", {
-        method: "POST",
-        body: JSON.stringify(graphqlQuery),
-        headers: {
-          Authorization: "Bearer " + this.props.token,
-          "Content-Type": "application/json",
-        },
+        };
+
+        return fetch("http://localhost:8080/graphql", {
+          method: "POST",
+          body: JSON.stringify(graphqlQuery),
+          headers: {
+            Authorization: "Bearer " + this.props.token,
+            "Content-Type": "application/json",
+          },
+        });
       })
-    }).then((res) => {
+      .then((res) => {
         return res.json();
       })
       .then((resData) => {
